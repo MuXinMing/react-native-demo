@@ -1,25 +1,18 @@
-import { getRecords } from "@/api/chat"
 import { create } from "zustand"
 
 export interface ChatRecord {
     id: string,
-    amount: number,
+    amount: string,
     category: string,
     type: "expense" | "income",
     note: string,
     date: string,
 }
 interface RecordState {
-    records: ChatRecord[],
-    getRecords: (params: any) => void
+    refresh: boolean
+    setRefresh: () => void
 }
-export const useRecordStore = create<RecordState>((set) => ({
-    records: [],
-    getRecords: async ({ page, pageSize, date }: any = {}) => {
-        const { data } = await getRecords({ page, pageSize, date })
-        const { items } = data
-        set({
-            records: items
-        })
-    }
+export const useRecordStore = create<RecordState>((set, get) => ({
+    refresh: false,
+    setRefresh: () => set({ refresh: !get().refresh })
 }))

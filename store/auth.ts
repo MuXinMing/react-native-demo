@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { create } from "zustand"
+import { createJSONStorage, persist } from "zustand/middleware"
 export interface UserInfo {
     id: string
     email: string
@@ -19,18 +19,17 @@ interface AuthState {
 }
 
 export const useAuthStore = create(persist<AuthState>((set,get) => ({
-    token: '',
+    token: "",
     userInfo: null,
     hasHydrated: false,
     logout: () => {
-        set({ token: '', userInfo: null })
-        // useAuthStore.persist.clearStorage()
+        set({ token: "", userInfo: null })
     },
     setToken: (token) => set({ token }),
     setUserInfo: (userInfo) => set({ userInfo }),
     setHasHydrated: (hasHydrated: boolean) => set({ hasHydrated }),
 }), {
-    name: 'auth',
+    name: "auth",
     storage: createJSONStorage(() => AsyncStorage),
     partialize(state) {
         return { ...state, hasHydrated: false }
