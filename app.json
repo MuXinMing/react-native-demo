@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.muxin.frontend"
     },
     "android": {
       "adaptiveIcon": {
@@ -51,6 +52,13 @@
       "eas": {
         "projectId": "3a838273-bac5-4cef-973b-e4228e79fb0a"
       }
+    },
+    "owner": "muxin",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3a838273-bac5-4cef-973b-e4228e79fb0a"
     }
   }
 }

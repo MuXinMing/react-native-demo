@@ -37,6 +37,10 @@ export default function AppLayout() {
                     <Stack>
                         <Stack.Protected guard={!!token}>
                             <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: "none" }} />
+                            <Stack.Screen name="bill/[billParams]" options={{ headerShown: false }} />
+                            <Stack.Screen name="user" options={{ headerShown: false }} />
+                            <Stack.Screen name="setting" options={{ headerShown: false }} />
+                            <Stack.Screen name="test" options={{ headerShown: false }} />
                             <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
                         </Stack.Protected>
                         <Stack.Protected guard={!token}>
