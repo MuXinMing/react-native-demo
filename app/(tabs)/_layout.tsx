@@ -1,10 +1,9 @@
-import { Tabs } from "expo-router"
-import React from "react"
-
 import { HapticTab } from "@/components/haptic-tab"
-import { IconSymbol } from "@/components/ui/icon-symbol"
+import { Icon } from "@/components/ui/icon"
 import { Colors } from "@/constants/theme"
 import { useColorScheme } from "@/hooks/use-color-scheme"
+import { Tabs } from "expo-router"
+import { Home, MessageCircleMore, User } from "lucide-react-native"
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
@@ -20,21 +19,21 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <Icon as={Home} color={color} size={24} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="chat"
         options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Chat",
+          tabBarIcon: ({ color }) => <Icon as={MessageCircleMore} color={color} size={24} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />
+          tabBarIcon: ({ color }) => <Icon as={User} color={color} size={24} />
         }}
       />
     </Tabs>

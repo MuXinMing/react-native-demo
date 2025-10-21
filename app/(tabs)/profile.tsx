@@ -1,65 +1,21 @@
-import { updateUser } from "@/api/user"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Icon } from "@/components/ui/icon"
 import { Text } from "@/components/ui/text"
 import { useAuthStore } from "@/store/auth"
-import { useMutation } from "@tanstack/react-query"
-import { useEffect } from "react"
-import { Controller, useForm } from "react-hook-form"
-import { View } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import Toast from "react-native-toast-message"
+import { useRouter } from "expo-router"
+import { Settings2 } from "lucide-react-native"
+import { useState } from "react"
+import { TouchableOpacity, View } from "react-native"
+import Animated, { interpolate, useAnimatedRef, useAnimatedStyle, useScrollOffset } from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 
 export default function Profile() {
-    const { userInfo, setUserInfo, logout } = useAuthStore()
-    const { control, formState: { errors }, setValue, handleSubmit } = useForm({
-        defaultValues: {
-            username: "",
-            firstName: "",
-            lastName: ""
-        },
-    })
-
-    useEffect(() => {
-        setValue("username", userInfo?.username || "")
-        setValue("firstName", userInfo?.firstName || "")
-        setValue("lastName", userInfo?.lastName || "")
-    }, [])
-    const handleLogout = () => {
-        logout()
-    }
-    const { mutate, isPending } = useMutation({
-        mutationKey: [],
-        mutationFn: updateUser,
-        onSuccess: ({ data: userInfo }) => {
-            console.log("return userInfo", userInfo)
-            setUserInfo(userInfo)
-            Toast.show({
-                type: "success",
-                text1: "Update user successful"
-            })
-        },
-        onError: (error: any) => {
-            const { code } = error || {}
-            if (code === 40009) {
-                Toast.show({
-                    type: "error",
-                    text1: error.message
-                })
-            }
-        }
-    })
-    // useEffect(() => {
-    //     setForm((prev) => ({
-    //         ...prev,
-    //         username: userInfo?.username || "",
-    //         firstName: userInfo?.firstName || "",
-    //         lastName: userInfo?.lastName || ""
-    //     }))
-    // }, [])
+    const { top } = useSafeAreaInsets()
+    const router = useRouter()
+    const { userInfo } = useAuthStore()
+    const [navBarHeight, setNavBarHeight] = useState(0)
     // const getProfile = async () => {
     //     try {
     //         setLoading(true)
@@ -84,78 +40,70 @@ export default function Profile() {
     //         setLoading(false)
     //     }
     // }
-
+    const scrollRef = useAnimatedRef<Animated.ScrollView>()
+    const scrollOffset = useScrollOffset(scrollRef)
+    const navbarStyle = useAnimatedStyle(() => {
+        return {
+            opacity: interpolate(scrollOffset.value, [0, 28], [0, 1], "clamp"),
+        }
+    })
+    const usernameStyle = useAnimatedStyle(() => {
+        return {
+            opacity: scrollOffset.value >= 28 ? 1 : 0
+        }
+    })
     return (
-        <SafeAreaView className="p-4 gap-y-4">
-            <Text variant="h4">Email:{userInfo?.email}</Text>
-            <View className="gap-y-2">
-                <Label>Username</Label>
-                <Controller
-                    name="username"
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <Input
-                            value={value}
-                            onChangeText={onChange}
-                            placeholder="Please enter your username"
-                            autoCapitalize="none"
-                        />
-                    )} />
-            </View>
-            <View className="gap-y-2">
-                <Label>First name</Label>
-                <Controller
-                    name="firstName"
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <Input
-                            value={value}
-                            onChangeText={onChange}
-                            placeholder="Please enter your first name"
-                            autoCapitalize="none"
-                            keyboardType="url"
-                        />
-                    )} />
-            </View>
-            <View className="gap-y-2">
-                <Label>Last name</Label>
-                <Controller
-                    name="lastName"
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <Input
-                            value={value}
-                            onChangeText={onChange}
-                            placeholder="Please enter your last name"
-                            autoCapitalize="none"
-                            keyboardType="url"
-                        />
-                    )} />
-            </View>
-            <Button disabled={isPending} onPress={handleSubmit((data) => mutate(data))}>
-                <Text>Update</Text>
-            </Button>
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button>
-                        <Text>Log out</Text>
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="text-center">Log out</AlertDialogTitle>
-                        <AlertDialogDescription className="text-center">Are you sure to log out?</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="flex-1">
-                            <Text>Cancel</Text>
-                        </AlertDialogCancel>
-                        <AlertDialogAction className="flex-1" onPress={() => logout()}>
-                            <Text>Confirm</Text>
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </SafeAreaView >
+        <View className="flex-1">
+            <Animated.View className="absolute w-full z-10">
+                <View style={{ paddingTop: top }} className="z-10">
+                    <View className="flex-row justify-between items-center py-2 px-4" onLayout={(event) => setNavBarHeight(event.nativeEvent.layout.height)}>
+                        <Animated.Text style={usernameStyle}>
+                            <Text variant="large">{userInfo?.username}</Text>
+                        </Animated.Text>
+                        <TouchableOpacity onPress={() => router.push("/setting")}>
+                            <Icon as={Settings2} size={24} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <Animated.View className="absolute inset-0 shadow-sm bg-white" style={navbarStyle}></Animated.View>
+            </Animated.View>
+            <Animated.ScrollView
+                ref={scrollRef}
+                contentContainerStyle={{ paddingTop: top + navBarHeight }}
+                bounces={false}
+            >
+                <View className="p-4 pt-0 gap-y-4">
+                    <View className="flex-row items-center gap-x-2">
+                        <Avatar
+                            alt="avatar"
+                            className="size-10 border-background border-2"
+                        >
+                            <AvatarImage source={{ uri: "https://github.com/evilrabbit.png" }} />
+                            <AvatarFallback>
+                                <Text>ER</Text>
+                            </AvatarFallback>
+                        </Avatar>
+                        <Text variant="h4" onPress={() => router.push("/user")}>{userInfo?.username}</Text>
+                    </View>
+                    <Button onPress={() => router.push("/test")}><Text>test</Text></Button>
+                    {/* <Text variant="h4">Email:{userInfo?.email}</Text> */}
+                    <View className="flex-row justify-between p-4 rounded-lg bg-primary-foreground">
+                        <View className="items-center gap-y-2">
+                            <Text className="font-medium">1</Text>
+                            <Text className="text-ring/50" variant="small">记账天数</Text>
+                        </View>
+                        <View className="items-center gap-y-2">
+                            <Text className="font-medium">1</Text>
+                            <Text className="text-ring/50" variant="small">账单</Text>
+                        </View>
+                        <View className="items-center gap-y-2">
+                            <Text className="font-medium">0</Text>
+                            <Text className="text-ring/50" variant="small">净资产</Text>
+                        </View>
+                    </View>
+                    <View style={{ height: 1000 }}></View>
+                </View>
+            </Animated.ScrollView>
+        </View>
     )
 }

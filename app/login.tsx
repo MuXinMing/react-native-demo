@@ -13,7 +13,6 @@ import { Controller, useForm } from "react-hook-form"
 import { TouchableOpacity, View } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import Toast from "react-native-toast-message"
 
 import { z } from "zod"
 
@@ -42,10 +41,11 @@ export default function Login() {
             setUserInfo(userInfo)
         },
         onError: (error) => {
-            Toast.show({
-                type: "error",
-                text1: error.message
-            })
+            console.log("🚀 ~ login.tsx:44 ~ Login ~ error:", error)
+            // Toast.show({            
+            //     type: "error",
+            //     text1: error.message
+            // })
         }
     })
     return (
