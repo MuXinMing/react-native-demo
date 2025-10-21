@@ -102,7 +102,15 @@ export default function App() {
           autoCapitalize="none"
           autoFocus
         />
-        <Button disabled={!input || status !== "ready"} onPress={() => sendMessage({ text: input })}><Text>Send</Text></Button>
+        <Button
+          disabled={!input || status !== "ready"}
+          onPress={() => {
+            sendMessage({ text: input })
+            setInput("")
+          }}
+        >
+          <Text>Send</Text>
+        </Button>
       </View>
     </KeyboardAvoidingView>
   )
