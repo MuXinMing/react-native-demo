@@ -21,7 +21,7 @@ export interface PageResponse<T> {
 
 const instance = axios.create({
     baseURL: process.env.EXPO_PUBLIC_API_URL,
-    timeout: 10 * 1000
+    timeout: 30 * 1000
 })
 instance.interceptors.request.use((config) => {
     const { token } = useAuthStore.getState()
@@ -34,7 +34,7 @@ instance.interceptors.response.use((response: AxiosResponse) => {
     const { data } = response
     return Promise.resolve(data)
 }, (error: AxiosError) => {
-    // console.log("error", error.request)
+    console.log("error", error)
     const { response } = error
     if (response) {
         const { status } = response
@@ -74,29 +74,5 @@ export const http = {
         config?: AxiosRequestConfig & { noToken?: boolean }
     ) => instance.delete<T, ResponseProps<T>>(url, config)
 }
-// export const get = <T = any>(
-//     url: string,
-//     config?: AxiosRequestConfig & { noToken?: boolean }
-// ) => instance.get<T, ResponseProps<T>>(url, config)
-
-// export const post = <T = any, D = any>(
-//     url: string,
-//     data?: D,
-//     config?: AxiosRequestConfig & { noToken?: boolean }
-// ) => instance.post<T, ResponseProps<T>, D>(url, data, config)
-
-// export const patch = <T = any, D = any>(
-//     url: string,
-//     data?: D,
-//     config?: AxiosRequestConfig & { noToken?: boolean }
-// ) => instance.patch<T, ResponseProps<T>, D>(url, data, config)
-
-// export const put = <T = any, D = any>(
-//     url: string,
-//     data?: D,
-//     config?: AxiosRequestConfig & { noToken?: boolean }
-// ) => instance.put<T, ResponseProps<T>>(url, data, config)
-
-// export const axiosDelete = <T = any>(url: string, config?: AxiosRequestConfig & { noToken?: boolean }) => instance.delete<T, ResponseProps<T>>(url, config)
 
 export default instance
