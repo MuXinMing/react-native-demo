@@ -22,7 +22,7 @@ const Setting = () => {
             </ScrollView>
             <Button
                 variant="destructive"
-                className="absolute left-3 right-3"
+                className="absolute left-3 right-3 bottom-3"
                 style={{ bottom }}
                 onPress={() => setOpen(true)}
                 onLayout={(event) => setButtonHeight(event.nativeEvent.layout.height)}
