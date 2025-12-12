@@ -31,3 +31,7 @@ export const deleteBill = (id: string) => {
 export const getMonthlyBillStatistics = (params: { year: string, month: string, timezone: string }) => {
     return http.get<MonthlyBillStatistics>("/bills/statistics/monthly", { params })
 }
+
+export const createBillByAi = (data: { prompt: string, today: string, timezone: string }) => {
+    return http.post("/bills/ai", data)
+}
