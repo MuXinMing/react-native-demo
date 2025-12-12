@@ -7,13 +7,14 @@ import { Text } from "@/components/ui/text"
 import { useAuthStore } from "@/store/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import CryptoJS from "crypto-js"
 import { useRouter } from "expo-router"
 import { Loader2 } from "lucide-react-native"
 import { Controller, useForm } from "react-hook-form"
 import { TouchableOpacity, View } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-
+import Toast from "react-native-toast-message"
 import { z } from "zod"
 
 const schema = z.object({
@@ -42,12 +43,20 @@ export default function Login() {
         },
         onError: (error) => {
             console.log("🚀 ~ login.tsx:44 ~ Login ~ error:", error)
-            // Toast.show({            
-            //     type: "error",
-            //     text1: error.message
-            // })
+            Toast.show({
+                type: "error",
+                text1: error.message
+            })
         }
     })
+
+    const handleLogin = (data: z.infer<typeof schema>) => {
+        const hashedPassword = CryptoJS.SHA256(data.password).toString(CryptoJS.enc.Hex)
+        mutateLogin({
+            ...data,
+            password: hashedPassword
+        })
+    }
     return (
         <KeyboardAwareScrollView className="flex-1" bottomOffset={28} showsVerticalScrollIndicator={false}>
             <View className="flex-1 gap-y-4 p-4" style={{ paddingTop: top }}>
@@ -85,7 +94,7 @@ export default function Login() {
                         )} />
                     {errors.password?.message && <Text className="text-red-500">{errors.password.message}</Text>}
                 </View>
-                <Button disabled={isPending} onPress={handleSubmit((data) => mutateLogin(data))}>
+                <Button disabled={isPending} onPress={handleSubmit(handleLogin)}>
                     {isPending && <View className="pointer-events-none animate-spin">
                         <Icon as={Loader2} className="text-primary-foreground" />
                     </View>}
@@ -95,8 +104,7 @@ export default function Login() {
                     <Text className="flex flex-row items-center justify-center">Don&apos;t have an account ? &nbsp;</Text>
                     <TouchableOpacity onPress={() => router.replace("/register")}><Text className="text-blue-300">Sign up</Text></TouchableOpacity>
                 </View>
-
-                {/* <ActivityIndicator color={"purple"} size={"large"}></ActivityIndicator> */}
+                <Text>{process.env.EXPO_PUBLIC_API_URL}</Text>
             </View>
         </KeyboardAwareScrollView>
     )

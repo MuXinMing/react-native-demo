@@ -1,12 +1,15 @@
 import { register } from "@/api/auth"
 import { Button } from "@/components/ui/button"
+import { Icon } from "@/components/ui/icon"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Text } from "@/components/ui/text"
 import { useAuthStore } from "@/store/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import CryptoJS from "crypto-js"
 import { useRouter } from "expo-router"
+import { Loader2 } from "lucide-react-native"
 import { Controller, useForm } from "react-hook-form"
 import { TouchableOpacity, View } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
@@ -49,6 +52,14 @@ export default function Register() {
             })
         }
     })
+
+    const handleSignUp = (data: z.infer<typeof schema>) => {
+        const hashedPassword = CryptoJS.SHA256(data.password).toString(CryptoJS.enc.Hex)
+        mutateRegister({
+            ...data,
+            password: hashedPassword
+        })
+    }
     return (
         <KeyboardAwareScrollView className="flex-1" bottomOffset={28} showsVerticalScrollIndicator={false}>
             <View style={{ paddingTop: top }} className="flex-1 p-4 gap-y-4">
@@ -134,7 +145,10 @@ export default function Register() {
                         )} />
                     {errors.lastName?.message && <Text>{errors.lastName.message}</Text>}
                 </View>
-                <Button disabled={isPending} onPress={handleSubmit((data) => mutateRegister(data))}>
+                <Button disabled={isPending} onPress={handleSubmit(handleSignUp)}>
+                    {isPending && <View className="pointer-events-none animate-spin">
+                        <Icon as={Loader2} className="text-primary-foreground" />
+                    </View>}
                     <Text>Sign up</Text>
                 </Button>
                 <View className="flex-row justify-center">
