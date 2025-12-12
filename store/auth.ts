@@ -8,7 +8,7 @@ export interface UserInfo {
     firstName?: string
     lastName?: string
 }
-interface AuthState {
+interface State {
     token: string
     userInfo: UserInfo | null
     hasHydrated: boolean
@@ -18,7 +18,7 @@ interface AuthState {
     setHasHydrated: (hasHydrated: boolean) => void
 }
 
-export const useAuthStore = create(persist<AuthState>((set,get) => ({
+export const useAuthStore = create<State>()(persist((set) => ({
     token: "",
     userInfo: null,
     hasHydrated: false,
@@ -32,9 +32,8 @@ export const useAuthStore = create(persist<AuthState>((set,get) => ({
     name: "auth",
     storage: createJSONStorage(() => AsyncStorage),
     partialize(state) {
-        return { ...state, hasHydrated: false }
+        const { token, userInfo } = state
+        return { token, userInfo }
     },
-    onRehydrateStorage: (state) => () => {
-        state.setHasHydrated(true)
-    },
+    onRehydrateStorage: (state) => () => state.setHasHydrated(true)
 }))
